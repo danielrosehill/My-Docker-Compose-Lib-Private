@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:10.5
+    container_name: librenms_db
+    command:
+      - "mysqld"
+      - "--innodb-file-per-table=1"
+      - "--lower-case-table-names=1"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    volumes:
+      - /home/daniel/app-data/lnms/mariadb:/var/lib/mysql
+    environment:
+      - TZ=Asia/Jerusalem
+      - MYSQL_DATABASE=librenms
+      - MYSQL_USER=librenms
+      - MYSQL_PASSWORD=IItFk6lhvNJgCZT9lG3L_leEUIA8i9nrutwBhqAMYpI
+      - MYSQL_ROOT_PASSWORD=K9pLm2nX4vY7zA1bC3dE5fG8hJ0kM6qR9sT2uV4w
+    restart: always
+
+  librenms:
+    image: jarischaefer/docker-librenms
+    container_name: librenms
+    ports:
+      - "8668:80"
+    depends_on:
+      - db
+    volumes:
+      - /home/daniel/app-data/lnms/logs:/opt/librenms/logs
+      - /home/daniel/app-data/lnms/rrd:/opt/librenms/rrd
+      - /home/daniel/app-data/lnms/custom.config.php:/opt/librenms/conf.d/custom.config.php:ro
+    environment:
+      - DB_HOST=db
+      - DB_NAME=librenms
+      - DB_USER=librenms
+      - DB_PASS=IItFk6lhvNJgCZT9lG3L_leEUIA8i9nrutwBhqAMYpI
+      - TZ=Asia/Jerusalem
+    restart: always
