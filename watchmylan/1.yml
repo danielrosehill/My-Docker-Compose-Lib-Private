@@ -1,0 +1,21 @@
+services:
+  watchyourlan:
+    container_name: watchyourlan
+    image: aceberg/watchyourlan
+    network_mode: host
+    volumes:
+      - ./data:/data
+    environment:
+      - TZ=Asia/Jerusalem
+    restart: unless-stopped
+
+  nmap:
+    image: instrumentisto/nmap
+    container_name: nmap
+    command: -sT -A -T3 -oX /data/scan.xml 10.0.0.0/24
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./data:/data
+    network_mode: host
+    restart: unless-stopped
